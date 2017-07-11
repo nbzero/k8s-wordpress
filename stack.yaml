@@ -18,6 +18,9 @@ metadata:
     app: wp-mariadb
 spec:
   template:
+    metadata:
+      labels:
+        app: wp-mariadb
     spec:
       containers:
         - name: wp-mariadb
@@ -44,19 +47,19 @@ spec:
   ports:
     - port: 80
   type: LoadBalancer
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: wp-pv-claim
-  labels:
-    app: wordpress
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: wp-pv-claim
+#   labels:
+#     app: wordpress
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 100Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -67,6 +70,9 @@ metadata:
 spec:
   replicas: 3
   template:
+    metadata:
+      labels:
+        app: wordpress
     spec:
       containers:
         - name: wordpress
@@ -80,25 +86,25 @@ spec:
               value: wp
             - name: WORDPRESS_DB_PASSWORD
               value: wpadmin
-          volumeMounts:
-            - name: wp-persistent-storage
-              mountPath: /var/www/html
-      volumes:
-        - name: wp-persistent-storage
-          persistentVolumeClaim:
-            claimName: wp-pv-claim
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: wordpress-pv
-  labels:
-    type: amazonEBS
-spec:
-  capacity:
-    storage: 100Gi
-  accessModes:
-    - ReadWriteOnce
-  awsElasticBlockStore:
-    volumeID: vol-0843fd5b02bf046cf
-    fsType: ext4
+      #     volumeMounts:
+      #       - name: wp-persistent-storage
+      #         mountPath: /var/www/html
+      # volumes:
+      #   - name: wp-persistent-storage
+      #     persistentVolumeClaim:
+      #       claimName: wp-pv-claim
+# ---
+# kind: PersistentVolume
+# apiVersion: v1
+# metadata:
+#   name: wordpress-pv
+#   labels:
+#     type: amazonEBS
+# spec:
+#   capacity:
+#     storage: 100Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   awsElasticBlockStore:
+#     volumeID: vol-0843fd5b02bf046cf
+#     fsType: ext4
