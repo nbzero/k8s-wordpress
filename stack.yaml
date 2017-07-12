@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: wp-mariadb
-          image: mariadb:10.12
+          image: mariadb
           ports:
             - containerPort: 3306
           env:
