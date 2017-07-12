@@ -52,14 +52,13 @@ spec:
 # kind: PersistentVolumeClaim
 # metadata:
 #   name: wp-pv-claim
-#   labels:
-#     app: wordpress
 # spec:
+#   storageClassName: anything
 #   accessModes:
 #     - ReadWriteOnce
 #   resources:
 #     requests:
-#       storage: 100Gi
+#       storage: 1Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -68,7 +67,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -86,25 +85,13 @@ spec:
               value: wp
             - name: WORDPRESS_DB_PASSWORD
               value: wpadmin
-      #     volumeMounts:
-      #       - name: wp-persistent-storage
-      #         mountPath: /var/www/html
-      # volumes:
-      #   - name: wp-persistent-storage
-      #     persistentVolumeClaim:
-      #       claimName: wp-pv-claim
-# ---
-# kind: PersistentVolume
-# apiVersion: v1
-# metadata:
-#   name: wordpress-pv
-#   labels:
-#     type: amazonEBS
-# spec:
-#   capacity:
-#     storage: 100Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   awsElasticBlockStore:
-#     volumeID: vol-0843fd5b02bf046cf
-#     fsType: ext4
+          volumeMounts:
+            - name: wp-persistent-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: wp-persistent-storage
+          # awsElasticBlockStore:
+          #   volumeID: vol-02a14e3b500f3f18e
+          #   fsType: ext4
+          persistentVolumeClaim:
+            claimName: wp-pv-claim
