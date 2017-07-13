@@ -33,9 +33,15 @@ spec:
             - name: MYSQL_DATABASE
               value: wordpress
             - name: MYSQL_USER
-              value: wp
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlsecrets
+                  key: wp_username
             - name: MYSQL_PASSWORD
-              value: wpadmin
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlsecrets
+                  key: wp_password
           volumeMounts:
             - name: wp-db-persistent-storage
               mountPath: /var/lib/mysql
@@ -80,9 +86,15 @@ spec:
             - name: WORDPRESS_DB_HOST
               value: wp-mariadb
             - name: WORDPRESS_DB_USER
-              value: wp
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlsecrets
+                  key: wp_username
             - name: WORDPRESS_DB_PASSWORD
-              value: wpadmin
+              valueFrom:
+                secretKeyRef:
+                  name: mysqlsecrets
+                  key: wp_password
           volumeMounts:
             - name: wp-persistent-storage
               mountPath: /var/www/html
