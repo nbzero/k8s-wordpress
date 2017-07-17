@@ -44,16 +44,18 @@ spec:
                 secretKeyRef:
                   name: mysqlsecrets
                   key: wp_password
-          volumeMounts:
-            - name: wp-db-persistent-storage
-              mountPath: /var/lib/mysql
-      volumes:
-        - name: wp-db-persistent-storage
-          persistentVolumeClaim:
-            claimName: wp-db-pv-claim
+      #     volumeMounts:
+      #       - name: wp-db-persistent-storage
+      #         mountPath: /var/lib/mysql
+      # volumes:
+      #   - name: wp-db-persistent-storage
+      #     persistentVolumeClaim:
+      #       claimName: wp-db-pv-claim
           # awsElasticBlockStore:
           #   volumeID: vol-099e9f83dde83a3c1
           #   fsType: ext4
+          # hostPath:
+          #   path: /mouth/var/lib/mysql
 ---
 apiVersion: v1
 kind: Service
@@ -73,12 +75,24 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
         app: wordpress
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - wordpress
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: wordpress
           image: wordpress
@@ -101,13 +115,15 @@ spec:
                 secretKeyRef:
                   name: mysqlsecrets
                   key: wp_password
-          volumeMounts:
-            - name: wp-persistent-storage
-              mountPath: /var/www/html
-      volumes:
-        - name: wp-persistent-storage
-          persistentVolumeClaim:
-            claimName: wp-pv-claim
+      #     volumeMounts:
+      #       - name: wp-persistent-storage
+      #         mountPath: /var/www/html
+      # volumes:
+      #   - name: wp-persistent-storage
+      #     persistentVolumeClaim:
+      #       claimName: wp-pv-claim
           # awsElasticBlockStore:
           #   volumeID: vol-057d10fad69b3a6dd
           #   fsType: ext4
+          # hostPath:
+          #   path: /mouth/var/www/html
